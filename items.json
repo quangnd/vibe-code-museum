@@ -22,5 +22,13 @@
     "type": "link",
     "url": "https://ncase.me/remember/",
     "icon": "📚"
+  },
+  {
+    "title": "Evergreen notes and writing as thinking tool",
+    "description": "Evergreen notes and writing as thinking tool concept by Andy Matuschak (for intermediate)",
+    "category": "Study",
+    "type": "link",
+    "url": "https://notes.andymatuschak.org/About_these_notes",
+    "icon": "✍️"
   }
 ]
