@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Calculator",
+    "description": "A retro pixel calculator with basic operations",
+    "category": "Tools",
+    "type": "app",
+    "url": "apps/calculator.html",
+    "icon": "🧮"
+  },
+  {
+    "title": "MDN Web Docs",
+    "description": "The ultimate web development reference",
+    "category": "Study",
+    "type": "link",
+    "url": "https://developer.mozilla.org",
+    "icon": "📖"
+  },
+  {
+    "title": "CSS Tricks",
+    "description": "Tips, tricks, and techniques on using CSS",
+    "category": "Study",
+    "type": "link",
+    "url": "https://css-tricks.com",
+    "icon": "🎨"
+  }
+]

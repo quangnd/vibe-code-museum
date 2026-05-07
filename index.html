@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Code Museum</title>
+
+  <!-- NES.css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nes.css@2.3.0/css/nes.min.css" />
+  <!-- Press Start 2P -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="museum-header">
+    <h1><i class="nes-icon trophy is-medium"></i> Vibe Code Museum</h1>
+    <p class="tagline">Mini apps, tools &amp; links — collected for fun &amp; study</p>
+  </header>
+
+  <!-- ── Category filters ───────────────────────────────── -->
+  <nav class="filters" id="filters">
+    <button class="nes-btn is-primary active" data-category="all">All</button>
+    <button class="nes-btn is-success" data-category="Study">Study</button>
+    <button class="nes-btn is-warning" data-category="Tools">Tools</button>
+    <button class="nes-btn is-error"   data-category="Fun">Fun</button>
+  </nav>
+
+  <!-- ── Card grid ──────────────────────────────────────── -->
+  <main class="card-grid" id="card-grid">
+    <!-- cards injected by app.js -->
+  </main>
+
+  <!-- ── Iframe overlay ─────────────────────────────────── -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-bar">
+      <span class="overlay-title" id="overlay-title"></span>
+      <button class="nes-btn is-error overlay-close" id="overlay-close">✕ Close</button>
+    </div>
+    <iframe id="overlay-iframe" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer class="museum-footer">
+    <p>Add items by editing <code>items.json</code> — push &amp; done!</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

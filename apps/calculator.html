@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retro Calculator</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Press Start 2P", cursive;
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .calc {
+      background: #16213e;
+      border: 4px solid #ffd700;
+      padding: 1rem;
+      width: 280px;
+      image-rendering: pixelated;
+    }
+
+    .display {
+      background: #0f3460;
+      border: 3px solid #e94560;
+      color: #ffd700;
+      font-family: "Press Start 2P", cursive;
+      font-size: 1.1rem;
+      text-align: right;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      min-height: 2.5rem;
+      word-break: break-all;
+      overflow: hidden;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    button {
+      font-family: "Press Start 2P", cursive;
+      font-size: 0.65rem;
+      padding: 0.7rem 0;
+      border: 3px solid #533483;
+      background: #2b2d42;
+      color: #f8f9fa;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    button:hover  { background: #533483; }
+    button:active { background: #e94560; }
+
+    .op   { background: #0f3460; border-color: #ffd700; color: #ffd700; }
+    .op:hover { background: #ffd700; color: #1a1a2e; }
+
+    .eq   { background: #e94560; border-color: #e94560; color: #fff; grid-column: span 2; }
+    .eq:hover { background: #ff6b6b; }
+
+    .clr  { background: #533483; border-color: #533483; color: #fff; grid-column: span 2; }
+    .clr:hover { background: #6c5ce7; }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="clr" onclick="clear_()">C</button>
+      <button class="op" onclick="append('/')">/</button>
+      <button class="op" onclick="append('*')">*</button>
+
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button class="op" onclick="append('-')">-</button>
+
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button class="op" onclick="append('+')">+</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button class="eq" onclick="calc()">=</button>
+
+      <button onclick="append('0')" style="grid-column:span 2">0</button>
+      <button onclick="append('.')">.</button>
+    </div>
+  </div>
+
+  <script>
+    const d = document.getElementById("display");
+    let expr = "";
+
+    function append(v) {
+      if (expr === "0" && v !== ".") expr = "";
+      expr += v;
+      d.textContent = expr;
+    }
+
+    function clear_() {
+      expr = "";
+      d.textContent = "0";
+    }
+
+    function calc() {
+      try {
+        const result = Function('"use strict"; return (' + expr + ")")();
+        expr = String(result);
+        d.textContent = expr;
+      } catch {
+        d.textContent = "ERR";
+        expr = "";
+      }
+    }
+  </script>
+</body>
+</html>

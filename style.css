@@ -1,0 +1,204 @@
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Press Start 2P", cursive;
+  background: #212529;
+  color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.museum-header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+
+.museum-header h1 {
+  font-size: 1.4rem;
+  margin: 0 0 0.75rem;
+  color: #ffd700;
+  text-shadow: 2px 2px 0 #b8860b;
+}
+
+.museum-header .tagline {
+  font-size: 0.6rem;
+  color: #adb5bd;
+  margin: 0;
+}
+
+/* ── Filters ──────────────────────────────────────────────────────────────── */
+
+.filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.filters .nes-btn {
+  font-family: "Press Start 2P", cursive;
+  font-size: 0.55rem;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.filters .nes-btn.active,
+.filters .nes-btn:hover {
+  opacity: 1;
+}
+
+/* ── Card grid ────────────────────────────────────────────────────────────── */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: 1rem 2rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  flex: 1;
+}
+
+.card {
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  background: #2b2d31;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 0 #000;
+}
+
+.card .card-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.card .card-title {
+  font-size: 0.7rem;
+  color: #ffd700;
+  margin: 0 0 0.4rem;
+  word-break: break-word;
+}
+
+.card .card-desc {
+  font-size: 0.5rem;
+  color: #ced4da;
+  line-height: 1.6;
+  margin: 0 0 0.75rem;
+}
+
+/* category badge */
+.card .badge {
+  display: inline-block;
+  font-size: 0.4rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  color: #212529;
+  font-weight: bold;
+}
+
+.badge-Study  { background: #51cf66; }
+.badge-Tools  { background: #fcc419; }
+.badge-Fun    { background: #ff6b6b; }
+
+/* type indicator */
+.card .type-tag {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 0.4rem;
+  color: #868e96;
+}
+
+/* ── Overlay (iframe modal) ───────────────────────────────────────────────── */
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #000000ee;
+  flex-direction: column;
+}
+
+.overlay.open {
+  display: flex;
+}
+
+.overlay-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: #212529;
+  border-bottom: 4px solid #ffd700;
+}
+
+.overlay-title {
+  font-size: 0.6rem;
+  color: #ffd700;
+}
+
+.overlay-close {
+  font-family: "Press Start 2P", cursive;
+  font-size: 0.5rem;
+}
+
+.overlay iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.museum-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.45rem;
+  color: #6c757d;
+}
+
+.museum-footer code {
+  color: #ffd700;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .museum-header h1 {
+    font-size: 1rem;
+  }
+}
