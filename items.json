@@ -8,19 +8,19 @@
     "icon": "🧮"
   },
   {
-    "title": "MDN Web Docs",
-    "description": "The ultimate web development reference",
-    "category": "Study",
-    "type": "link",
-    "url": "https://developer.mozilla.org",
-    "icon": "📖"
+    "title": "Emotion table",
+    "description": "A table of emotions and their corresponding facial expressions (for studying English)",
+    "category": "Tools",
+    "type": "app",
+    "url": "apps/emotion-table.html",
+    "icon": "😊"
   },
   {
-    "title": "CSS Tricks",
-    "description": "Tips, tricks, and techniques on using CSS",
+    "title": "How to remember anything forever-ish",
+    "description": "A best study source about memory and how to remember things effectively (for beginner)",
     "category": "Study",
     "type": "link",
-    "url": "https://css-tricks.com",
-    "icon": "🎨"
+    "url": "https://ncase.me/remember/",
+    "icon": "📚"
   }
 ]

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,15 +16,20 @@
 
   <!-- ── Header ─────────────────────────────────────────── -->
   <header class="museum-header">
-    <h1><i class="nes-icon trophy is-medium"></i> Vibe Code Museum</h1>
+    <div class="header-top">
+      <h1><span class="header-dino">🦖</span><span class="title-text"> Vibe Code Museum </span><span class="header-dino">🦕</span></h1>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
     <p class="tagline">Mini apps, tools &amp; links — collected for fun &amp; study</p>
   </header>
 
   <!-- ── Category filters ───────────────────────────────── -->
   <nav class="filters" id="filters">
     <button class="nes-btn is-primary active" data-category="all">All</button>
-    <button class="nes-btn is-success" data-category="Study">Study</button>
     <button class="nes-btn is-warning" data-category="Tools">Tools</button>
+    <button class="nes-btn is-success" data-category="Study">Study</button>
     <button class="nes-btn is-error"   data-category="Fun">Fun</button>
   </nav>
 
@@ -44,7 +49,7 @@
 
   <!-- ── Footer ─────────────────────────────────────────── -->
   <footer class="museum-footer">
-    <p>Add items by editing <code>items.json</code> — push &amp; done!</p>
+    <p>Made by Mun with ❤️</p>
   </footer>
 
   <script src="app.js"></script>

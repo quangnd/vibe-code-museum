@@ -1,3 +1,80 @@
+/* ── Theme variables ───────────────────────────────────────────────────────── */
+
+:root {
+  /* 🦕 Dino light — mossy jungle parchment */
+  --bg-page:       #eef5e6;
+  --bg-surface:    #f5faf0;
+  --bg-card:       #f8fcf3;
+  --bg-card-hover: #d4ecb5;
+  --text-primary:  #1a2e0a;
+  --text-muted:    #4a7030;
+  --text-sub:      #3d5828;
+  --text-desc:     #3d5828;
+  --accent:        #2a7a10;
+  --accent-shadow: #164d06;
+  --header-bg:     #dff0c4;
+  --footer-color:  #5a8040;
+  --overlay-bg:    #000000ee;
+  --overlay-bar:   #dff0c4;
+  --overlay-title: #2a7a10;
+}
+
+html[data-theme="dark"] {
+  /* 🦖 Dino dark — deep jungle night */
+  --bg-page:       #0b1a06;
+  --bg-surface:    #122008;
+  --bg-card:       #162810;
+  --bg-card-hover: #1e3c18;
+  --text-primary:  #c8e8a0;
+  --text-muted:    #6aaa40;
+  --text-sub:      #90c870;
+  --text-desc:     #90c870;
+  --accent:        #72d828;
+  --accent-shadow: #3a8a10;
+  --header-bg:     #0b1a06;
+  --footer-color:  #5a9a38;
+  --overlay-bar:   #0b1a06;
+  --overlay-title: #72d828;
+}
+
+/* ── Animations ────────────────────────────────────────────────────────────── */
+
+/* Title flashlight sweep */
+@keyframes titleFlashlight {
+  0%   { background-position: -250% center; }
+  100% { background-position: 250% center; }
+}
+
+/* Card entrance — fade + slide up */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Emoji wiggle — funny wobble on hover */
+@keyframes emojiWiggle {
+  0%   { transform: rotate(0deg)   scale(1); }
+  15%  { transform: rotate(-20deg) scale(1.3); }
+  30%  { transform: rotate( 18deg) scale(1.25); }
+  45%  { transform: rotate(-14deg) scale(1.3); }
+  60%  { transform: rotate( 10deg) scale(1.2); }
+  75%  { transform: rotate( -6deg) scale(1.15); }
+  90%  { transform: rotate(  3deg) scale(1.1); }
+  100% { transform: rotate(  0deg) scale(1); }
+}
+
+/* Dino emoji bob in header */
+@keyframes dinoBob {
+  0%, 100% { transform: translateY(0)    rotate(-4deg); }
+  50%       { transform: translateY(-6px) rotate( 4deg); }
+}
+
+/* Trophy icon float */
+@keyframes trophyFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
 /* ── Base ──────────────────────────────────────────────────────────────────── */
 
 *,
@@ -14,11 +91,12 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Press Start 2P", cursive;
-  background: #212529;
-  color: #f8f9fa;
+  background: var(--bg-page);
+  color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: background 0.3s, color 0.3s;
 }
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
@@ -26,19 +104,82 @@ body {
 .museum-header {
   text-align: center;
   padding: 2rem 1rem 1rem;
+  background: var(--header-bg);
+  transition: background 0.3s;
+  border-bottom: 4px solid var(--accent);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
 }
 
 .museum-header h1 {
   font-size: 1.4rem;
   margin: 0 0 0.75rem;
-  color: #ffd700;
-  text-shadow: 2px 2px 0 #b8860b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.title-text {
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    var(--accent) 35%,
+    #ffffff 50%,
+    var(--accent) 65%,
+    var(--accent) 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleFlashlight 8s linear infinite;
+}
+
+.header-dino {
+  font-size: 1.8rem;
+  display: inline-block;
+  animation: dinoBob 1.2s ease-in-out infinite;
+  margin-right: 0.3rem;
 }
 
 .museum-header .tagline {
   font-size: 0.6rem;
-  color: #adb5bd;
+  color: var(--text-muted);
   margin: 0;
+}
+
+/* ── Theme toggle ─────────────────────────────────────────────────────────── */
+
+.theme-toggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-65%);
+  background: var(--bg-card);
+  border: 3px solid var(--accent);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.3rem 0.45rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  box-shadow: 3px 3px 0 var(--accent);
+}
+
+.theme-toggle:hover {
+  transform: translateY(-65%) translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--accent);
+}
+
+.theme-toggle:active {
+  transform: translateY(-65%) translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--accent);
 }
 
 /* ── Filters ──────────────────────────────────────────────────────────────── */
@@ -49,18 +190,21 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1rem;
+  background: var(--header-bg);
+  transition: background 0.3s;
 }
 
 .filters .nes-btn {
   font-family: "Press Start 2P", cursive;
   font-size: 0.55rem;
   opacity: 0.55;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, transform 0.1s;
 }
 
 .filters .nes-btn.active,
 .filters .nes-btn:hover {
   opacity: 1;
+  transform: translateY(-2px);
 }
 
 /* ── Card grid ────────────────────────────────────────────────────────────── */
@@ -68,53 +212,82 @@ body {
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+  align-content: start;
   gap: 1.5rem;
-  padding: 1rem 2rem 2rem;
+  padding: 1.5rem 2rem 2rem;
   max-width: 1100px;
   margin: 0 auto;
   flex: 1;
+  width: 100%;
 }
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
 
 .card {
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  background: #2b2d31;
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Entrance animation — delay set via inline style from app.js */
+  animation: fadeSlideUp 0.4s ease both;
+  transition: box-shadow 0.15s, background-color 0.2s;
+}
+
+html:not([data-theme="dark"]) .card.nes-container.is-dark {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 0 #000;
+  box-shadow: 0 8px 0 var(--accent-shadow) !important;
+  background-color: var(--bg-card-hover) !important;
 }
 
 .card .card-icon {
   font-size: 2rem;
   display: block;
+  height: 2.8rem;          /* fixed height so hover scale never overlaps title */
   margin-bottom: 0.5rem;
+  transition: transform 0.2s;
+  transform-origin: left center;
+}
+
+.card:hover .card-icon {
+  animation: emojiWiggle 0.6s ease forwards;
 }
 
 .card .card-title {
   font-size: 0.7rem;
-  color: #ffd700;
+  color: var(--accent);
   margin: 0 0 0.4rem;
   word-break: break-word;
 }
 
 .card .card-desc {
   font-size: 0.5rem;
-  color: #ced4da;
+  color: var(--text-desc);
   line-height: 1.6;
   margin: 0 0 0.75rem;
 }
 
-/* category badge */
+/* category badge — pinned to bottom */
 .card .badge {
+  margin-top: auto;
   display: inline-block;
   font-size: 0.4rem;
   padding: 2px 8px;
   border-radius: 2px;
-  color: #212529;
+  color: #1a2e0a;
   font-weight: bold;
+  transition: transform 0.15s;
+}
+
+.card:hover .badge {
+  transform: scale(1.08);
 }
 
 .badge-Study  { background: #51cf66; }
@@ -127,7 +300,7 @@ body {
   top: 6px;
   right: 10px;
   font-size: 0.4rem;
-  color: #868e96;
+  color: var(--text-muted);
 }
 
 /* ── Overlay (iframe modal) ───────────────────────────────────────────────── */
@@ -137,7 +310,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: #000000ee;
+  background: var(--overlay-bg);
   flex-direction: column;
 }
 
@@ -150,13 +323,14 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  background: #212529;
-  border-bottom: 4px solid #ffd700;
+  background: var(--overlay-bar);
+  border-bottom: 4px solid var(--accent);
+  transition: background 0.3s;
 }
 
 .overlay-title {
   font-size: 0.6rem;
-  color: #ffd700;
+  color: var(--overlay-title);
 }
 
 .overlay-close {
@@ -176,12 +350,34 @@ body {
 .museum-footer {
   text-align: center;
   padding: 1.5rem 1rem;
-  font-size: 0.45rem;
-  color: #6c757d;
+  font-size: 0.5rem;
+  background: var(--header-bg);
+  border-top: 4px solid var(--accent);
+  transition: background 0.3s;
 }
 
-.museum-footer code {
-  color: #ffd700;
+.museum-footer p {
+  margin: 0;
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--footer-color) 0%,
+    var(--footer-color) 35%,
+    #ffffff 50%,
+    var(--footer-color) 65%,
+    var(--footer-color) 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: flashlight 8s linear infinite;
+}
+
+/* Flashlight sweep on footer text */
+@keyframes flashlight {
+  0%   { background-position: -250% center; }
+  100% { background-position: 250% center; }
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
@@ -200,5 +396,10 @@ body {
 
   .museum-header h1 {
     font-size: 1rem;
+  }
+
+  .theme-toggle {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.35rem;
   }
 }

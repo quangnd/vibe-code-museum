@@ -7,6 +7,27 @@
   const iframe  = document.getElementById("overlay-iframe");
   const oTitle  = document.getElementById("overlay-title");
   const oClose  = document.getElementById("overlay-close");
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon   = themeToggle.querySelector(".theme-icon");
+
+  // ── Theme ────────────────────────────────────────────────────────────────
+
+  const root = document.documentElement;
+
+  function applyTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
+    localStorage.setItem("museum-theme", theme);
+  }
+
+  // Load saved preference, default to light
+  const savedTheme = localStorage.getItem("museum-theme") || "light";
+  applyTheme(savedTheme);
+
+  themeToggle.addEventListener("click", () => {
+    const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+  });
 
   // ── Fetch items ──────────────────────────────────────────────────────────
 
@@ -23,6 +44,7 @@
   // ── Render cards ─────────────────────────────────────────────────────────
 
   function renderCards(category) {
+    const isDark = root.getAttribute("data-theme") === "dark";
     const filtered = category === "all"
       ? items
       : items.filter((i) => i.category === category);
@@ -30,7 +52,7 @@
     grid.innerHTML = filtered
       .map(
         (item, idx) => `
-      <div class="nes-container is-dark card" data-index="${items.indexOf(item)}">
+      <div class="nes-container ${isDark ? "is-dark" : ""} card" data-index="${items.indexOf(item)}" style="animation-delay: ${idx * 0.08}s">
         <span class="type-tag">${item.type === "app" ? "▶ app" : "🔗 link"}</span>
         <span class="card-icon">${item.icon || "📦"}</span>
         <p class="card-title">${item.title}</p>
@@ -41,7 +63,13 @@
       .join("");
   }
 
-  renderCards("all");
+  let activeCategory = "all";
+  renderCards(activeCategory);
+
+  // Re-render when theme changes so the is-dark class stays in sync
+  themeToggle.addEventListener("click", () => {
+    renderCards(activeCategory);
+  });
 
   // ── Filter buttons ───────────────────────────────────────────────────────
 
@@ -51,7 +79,8 @@
 
     filters.querySelectorAll(".nes-btn").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
-    renderCards(btn.dataset.category);
+    activeCategory = btn.dataset.category;
+    renderCards(activeCategory);
   });
 
   // ── Card clicks ──────────────────────────────────────────────────────────

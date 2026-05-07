@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emotion Words v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fdf0f8;
+    font-family: 'DM Sans', sans-serif;
+    padding: 32px 16px;
+    overflow-x: hidden;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: min(96vw, 900px);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    color: #3d1f40;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transform: translateY(-18px);
+    animation: titleDrop 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+  }
+
+  @keyframes titleDrop {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Grid replaces table ── */
+  .word-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(max-content, 1fr));
+    gap: 0;
+    width: 100%;
+    background: #e8c6e0;
+    border: 1.5px solid #e8c6e0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(120,40,140,0.10);
+  }
+
+  /* Narrow screens: reduce columns so no orphan cells appear */
+  @media (max-width: 700px) {
+    .word-grid { grid-template-columns: repeat(3, minmax(max-content, 1fr)); }
+  }
+  @media (max-width: 420px) {
+    .word-grid { grid-template-columns: repeat(2, minmax(max-content, 1fr)); }
+  }
+
+  @keyframes cellIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .cell {
+    padding: clamp(14px, 3vw, 22px) clamp(10px, 2.5vw, 20px);
+    background: #fef5fb;
+    border: none;
+    outline: 1.5px solid #e8c6e0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(0.82rem, 2.2vw, 1.05rem);
+    color: #5a2060;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    word-break: normal;
+
+    opacity: 0;
+    transition:
+      background 0.22s ease,
+      color 0.22s ease,
+      transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+      box-shadow 0.22s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (hover: hover) {
+    .cell:hover {
+      background: #f0d0e8;
+      color: #2a0a30;
+      transform: scale(1.06) translateY(-2px);
+      box-shadow: 0 6px 20px rgba(120,40,140,0.13);
+      z-index: 2;
+    }
+  }
+
+  .cell.active {
+    background: #d49ec8;
+    color: #1a0020;
+    transform: scale(1.03);
+  }
+
+  /* ── Floating emoji ── */
+  .cell .float-emoji {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: clamp(0.7rem, 1.8vw, 0.95rem);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    line-height: 1;
+    font-style: normal;
+  }
+
+  @media (hover: hover) {
+    .cell:hover .float-emoji { opacity: 1; transform: translateY(0); animation: floatBob 1.8s ease-in-out infinite; }
+  }
+  .cell.active .float-emoji  { opacity: 1; transform: translateY(0); animation: floatBob 1.8s ease-in-out infinite; }
+
+  @keyframes floatBob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-4px); }
+  }
+
+  /* ── Ripple ── */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(200,100,180,0.35);
+    transform: scale(0);
+    animation: rippleOut 0.55s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes rippleOut {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* ════════════════════════════════
+     POPUP — floats on desktop,
+     bottom sheet on mobile
+  ════════════════════════════════ */
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: transparent;
+  }
+  .overlay.visible { display: block; }
+
+  /* shared base */
+  .popup {
+    position: fixed;
+    z-index: 1000;
+    background: #fdf0fb;
+    border: 1.5px solid #d49ec8;
+    box-shadow: 0 12px 48px rgba(120,40,140,0.20);
+    padding: 20px 24px;
+    text-align: center;
+    pointer-events: auto;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  /* ── Desktop: small floating card ── */
+  @media (min-width: 541px) {
+    .popup {
+      border-radius: 16px;
+      min-width: 210px;
+      max-width: 250px;
+      transform: scale(0.78) translateY(10px);
+      transition: opacity 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                  transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                  visibility 0s linear 0.22s;
+    }
+    .popup.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      visibility: visible;
+      transition: opacity 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                  transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                  visibility 0s linear 0s;
+    }
+  }
+
+  /* ── Mobile: bottom sheet ── */
+  @media (max-width: 540px) {
+    .overlay.visible {
+      background: rgba(80,20,90,0.35);
+    }
+    .popup {
+      border-radius: 20px 20px 0 0;
+      border-bottom: none;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      top: auto !important;
+      width: 100% !important;
+      max-width: 100%;
+      padding: 24px 28px 36px;
+      transform: translateY(100%);
+      transition: opacity 0.28s ease,
+                  transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                  visibility 0s linear 0.32s;
+    }
+    .popup.visible {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+      transition: opacity 0.28s ease,
+                  transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                  visibility 0s linear 0s;
+    }
+    /* drag handle */
+    .popup::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 4px;
+      background: #d49ec8;
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+  }
+
+  .popup-emoji {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  @keyframes emojiPop {
+    0%   { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.15) rotate(4deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .popup-def {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: #5a2060;
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+  }
+
+  .popup-phonetic {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    color: #b06090;
+    margin-bottom: 18px;
+    display: block;
+    letter-spacing: 0.03em;
+  }
+
+  .sound-btn {
+    background: #3d1f40;
+    color: #fef5fb;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sound-btn:hover  { background: #c870b0; transform: scale(1.12); }
+
+  .sound-btn.speaking {
+    background: #c870b0;
+    animation: speakPulse 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes speakPulse {
+    from { transform: scale(1);    box-shadow: 0 0 0   0 rgba(210,120,200,0.4); }
+    to   { transform: scale(1.18); box-shadow: 0 0 0 8px rgba(210,120,200,0);   }
+  }
+
+  .sound-btn.speaking::before,
+  .sound-btn.speaking::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(210,120,200,0.6);
+    animation: ring 1s ease-out infinite;
+  }
+  .sound-btn.speaking::after { animation-delay: 0.4s; }
+
+  @keyframes ring {
+    0%   { width: 100%; height: 100%; opacity: 1; }
+    100% { width: 200%; height: 200%; left: -50%; top: -50%; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <h1>Feelings &amp; Emotions</h1>
+
+  <div class="word-grid" id="wordGrid">
+    <div class="cell">nervous</div>
+    <div class="cell">terrified</div>
+    <div class="cell">embarrassed</div>
+    <div class="cell">keen</div>
+    <div class="cell">worried</div>
+    <div class="cell">happy</div>
+    <div class="cell">disappointed</div>
+    <div class="cell">anxious</div>
+    <div class="cell">confident</div>
+    <div class="cell">doubtful</div>
+    <div class="cell">anticipation</div>
+    <div class="cell">excited</div>
+    <div class="cell">delighted</div>
+    <div class="cell">apprehension</div>
+    <div class="cell">humiliated</div>
+    <div class="cell">concerned</div>
+    <div class="cell">scared</div>
+    <div class="cell">enthusiastic</div>
+  </div>
+
+  <footer style="font-family:'DM Sans',sans-serif;font-size:0.72rem;color:#c080b0;letter-spacing:0.04em;">Made by Mun with ❤️</footer>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="popup" id="popup">
+  <span class="popup-emoji" id="popupEmoji"></span>
+  <span class="popup-def" id="popupDef"></span>
+  <span class="popup-phonetic" id="popupPhonetic"></span>
+  <button class="sound-btn" id="soundBtn" title="Pronounce">🔊</button>
+</div>
+
+<script>
+  const wordData = {
+    nervous:       { emoji: '😬', def: 'Uneasy or anxious about something uncertain', phonetic: '/ˈnɜːr.vəs/' },
+    terrified:     { emoji: '😱', def: 'Extremely frightened', phonetic: '/ˈter.ɪ.faɪd/' },
+    embarrassed:   { emoji: '😳', def: 'Feeling awkward or ashamed in front of others', phonetic: '/ɪmˈbær.əst/' },
+    keen:          { emoji: '🤩', def: 'Eager and enthusiastic about something', phonetic: '/kiːn/' },
+    worried:       { emoji: '😟', def: 'Feeling troubled about possible problems', phonetic: '/ˈwɜːr.id/' },
+    happy:         { emoji: '😊', def: 'Feeling pleasure or contentment', phonetic: '/ˈhæp.i/' },
+    disappointed:  { emoji: '😞', def: 'Sad because expectations were not met', phonetic: '/ˌdɪs.əˈpɔɪn.tɪd/' },
+    anxious:       { emoji: '😰', def: 'Worried and tense about what might happen', phonetic: '/ˈæŋk.ʃəs/' },
+    confident:     { emoji: '😎', def: 'Feeling sure of yourself and your abilities', phonetic: '/ˈkɒn.fɪ.dənt/' },
+    doubtful:      { emoji: '🤨', def: 'Uncertain or unsure about something', phonetic: '/ˈdaʊt.fəl/' },
+    anticipation:  { emoji: '🤞', def: 'Excitement about something expected to happen', phonetic: '/ænˌtɪs.ɪˈpeɪ.ʃən/' },
+    excited:       { emoji: '🎉', def: 'Very enthusiastic and eager', phonetic: '/ɪkˈsaɪ.tɪd/' },
+    delighted:     { emoji: '😄', def: 'Very pleased and happy', phonetic: '/dɪˈlaɪ.tɪd/' },
+    apprehension:  { emoji: '😧', def: 'A feeling of fear or worry about the future', phonetic: '/ˌæp.rɪˈhen.ʃən/' },
+    humiliated:    { emoji: '😔', def: 'Made to feel ashamed or lose dignity', phonetic: '/hjuːˈmɪl.i.eɪ.tɪd/' },
+    concerned:     { emoji: '😕', def: 'Worried or troubled about something', phonetic: '/kənˈsɜːrnd/' },
+    scared:        { emoji: '😨', def: 'Frightened by a threat or danger', phonetic: '/skerd/' },
+    enthusiastic:  { emoji: '🙌', def: 'Having intense interest or excitement', phonetic: '/ɪnˌθjuː.ziˈæs.tɪk/' },
+  };
+
+  /* ── Staggered cell entrance ── */
+  const cells = document.querySelectorAll('.cell');
+  cells.forEach((el, i) => {
+    const word = el.textContent.trim().toLowerCase();
+    const data = wordData[word];
+    if (data) {
+      const span = document.createElement('span');
+      span.className = 'float-emoji';
+      span.textContent = data.emoji;
+      el.appendChild(span);
+    }
+    el.style.animation = `cellIn 0.45s cubic-bezier(0.22,1,0.36,1) ${0.15 + i * 0.055}s forwards`;
+  });
+
+  /* ── Ripple ── */
+  function spawnRipple(el, clientX, clientY) {
+    const rect = el.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = clientX - rect.left - size / 2;
+    const y = clientY - rect.top  - size / 2;
+    const rip = document.createElement('span');
+    rip.className = 'ripple';
+    rip.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+    el.appendChild(rip);
+    rip.addEventListener('animationend', () => rip.remove());
+  }
+
+  const isMobile = () => window.innerWidth <= 540;
+
+  /* ── Popup ── */
+  const popup         = document.getElementById('popup');
+  const overlay       = document.getElementById('overlay');
+  const popupEmoji    = document.getElementById('popupEmoji');
+  const popupDef      = document.getElementById('popupDef');
+  const popupPhonetic = document.getElementById('popupPhonetic');
+  const soundBtn      = document.getElementById('soundBtn');
+
+  let activeCell  = null;
+  let currentWord = '';
+
+  function positionPopup(cell) {
+    if (isMobile()) {
+      popup.style.top  = '';
+      popup.style.left = '';
+      return;
+    }
+    const rect = cell.getBoundingClientRect();
+    const pw = 250, ph = 160;
+    let top  = rect.bottom + 12;
+    let left = rect.left + rect.width / 2 - pw / 2;
+    if (top + ph > window.innerHeight - 10) top = rect.top - ph - 12;
+    if (left < 8) left = 8;
+    if (left + pw > window.innerWidth - 8)  left = window.innerWidth - pw - 8;
+    popup.style.top  = top  + 'px';
+    popup.style.left = left + 'px';
+  }
+
+  function openPopup(cell, word) {
+    if (activeCell) activeCell.classList.remove('active');
+    activeCell = cell;
+    cell.classList.add('active');
+
+    currentWord = word;
+    const data = wordData[word] || { emoji: '💬', def: word, phonetic: '' };
+
+    popupEmoji.style.animation = 'none';
+    popupEmoji.offsetHeight;
+    popupEmoji.style.animation = 'emojiPop 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+
+    popupEmoji.textContent    = data.emoji;
+    popupDef.textContent      = data.def;
+    popupPhonetic.textContent = data.phonetic;
+    soundBtn.classList.remove('speaking');
+
+    positionPopup(cell);
+    popup.classList.add('visible');
+    overlay.classList.add('visible');
+  }
+
+  function closePopup() {
+    popup.classList.remove('visible');
+    overlay.classList.remove('visible');
+    if (activeCell) activeCell.classList.remove('active');
+    activeCell = null;
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    soundBtn.classList.remove('speaking');
+  }
+
+  document.getElementById('wordGrid').addEventListener('click', e => {
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    spawnRipple(cell, e.clientX, e.clientY);
+    const word = cell.childNodes[0].textContent.trim().toLowerCase();
+    if (popup.classList.contains('visible') && activeCell === cell) {
+      closePopup();
+    } else {
+      openPopup(cell, word);
+    }
+  });
+
+  overlay.addEventListener('click', closePopup);
+
+  soundBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(currentWord);
+    utt.lang = 'en-US';
+    utt.rate = 0.85;
+    soundBtn.classList.add('speaking');
+    utt.onend   = () => soundBtn.classList.remove('speaking');
+    utt.onerror = () => soundBtn.classList.remove('speaking');
+    window.speechSynthesis.speak(utt);
+  });
+
+  window.addEventListener('resize', () => { if (activeCell) positionPopup(activeCell); });
+</script>
+</body>
+</html>
