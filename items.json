@@ -16,6 +16,14 @@
     "icon": "😊"
   },
   {
+    "title": "GTD + Todoist setup",
+    "description": "A full guide to GTD method and how to use Todoist app to implement GTD effectively (for beginner)",
+    "category": "Tools",
+    "type": "app",
+    "url": "apps/gtd-todoist-guide.html",
+    "icon": "🔁"
+  },
+  {
     "title": "How to remember anything forever-ish",
     "description": "A best study source about memory and how to remember things effectively (for beginner)",
     "category": "Study",
